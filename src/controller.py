@@ -11,17 +11,15 @@ class Controller:
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Turkish Flashcards Game")
         
-        # Enhanced colors and styling
         self.COLORS = {
             'background': (245, 247, 250),
-            'primary': (46, 196, 102),    # Green from your sketch
-            'secondary': (255, 255, 255),  # White
-            'text': (33, 33, 33),         # Dark gray
-            'accent': (70, 130, 240),     # Blue for highlights
-            'error': (255, 89, 89)        # Red for wrong answers
+            'primary': (46, 196, 102),
+            'secondary': (255, 255, 255),
+            'text': (33, 33, 33),
+            'accent': (70, 130, 240),
+            'error': (255, 89, 89)     
         }
         
-        # Improved fonts
         self.fonts = {
             'large': pygame.font.Font(None, 48),
             'medium': pygame.font.Font(None, 36),
@@ -101,7 +99,7 @@ class Controller:
         start_btn = self.draw_button("Start Game", 300, 300, 200, 50, 
                                    self.button_hover == "start")
         
-        # Add decorative elements
+        # Decorative elements
         pygame.draw.circle(self.screen, self.COLORS['primary'], (100, 100), 30)
         pygame.draw.circle(self.screen, self.COLORS['accent'], (700, 500), 40)
 
@@ -228,7 +226,7 @@ class Controller:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_click(mouse_x, mouse_y)
 
-            # Draw current screen
+            # Draws current screen
             if self.game_state == "START":
                 self.draw_start_screen()
             elif self.game_state == "GAME":
