@@ -118,5 +118,5 @@ class GameBoard:
         """
         self.score = 0
         self.current_card = None
-        random.shuffle(self.flashcards)  # Optional: Shuffle flashcards for a fresh start
+        random.shuffle(self.flashcards)
         self.next_card()

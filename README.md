@@ -1,6 +1,3 @@
-
-:warning: Everything between << >> needs to be replaced (remove << >> after replacing)
-
 # Turkish Flashcards Game
 ## CS110 Final Project Fall 2024
 
@@ -12,7 +9,7 @@ Mert Kanibir
 
 ## Project Description
 
-The Turkish Language Flashcard Game is an interactive educational application designed to help users learn Turkish vocabulary through an engaging quiz-style interface. The game presents users with English words and challenges them to select the correct Turkish translation from multiple options, tracking their progress through a scoring system.
+The Turkish Language Flashcard Game is an interactive and dynamic educational tool designed to enhance Turkish vocabulary learning. With a focus on engagement and ease of use, the game offers a quiz-style interface where users match English words with their corresponding Turkish translations. The game tracks progress through a scoring system, offers feedback on responses, and includes features like a username-based leaderboard, a lives system, and smooth animations for a modern user experience. Ideal for learners of all levels, this application combines learning and fun in a visually appealing and intuitive environment.
 
 ***    
 
@@ -28,36 +25,29 @@ The Turkish Language Flashcard Game is an interactive educational application de
 
 ## Program Design
 
-### Features
+## Features
 
-1. Multiple CHoice Interface
-2. Score Tracking System
-3. Menu Navigaton
-4. Word Database Management
-5. Basic UI Controls
+1. Flashcards
+2. Score Tracking
+3. Multiple Choice
+4. Usernames
+5. Welcome Screen
 
 ### Classes
 
-- << You should have a list of each of your classes with a description >>
+### Classes
+
+- **Controller**: Manages the user interface, game state, and user interactions such as button clicks and hover effects. Handles the main game logic and transitions between screens.  
+- **GameBoard**: Manages the flashcards, scoring system, and game progression. Responsible for generating multiple-choice options and validating user answers.  
+- **Card**: Represents a single flashcard with an English word and its Turkish (or other language) translation. Provides the data structure for individual flashcards.  
 
 ## ATP
 
-| Step | Procedure                                                                                  | Expected Results                                                  |
-|------|--------------------------------------------------------------------------------------------|------------------------------------------------------------------|
-| 1    | Run the game program.                                                                      | A GUI window appears with the title "Turkish Flashcards Game".   |
-| 2    | On the welcome screen, click the "Start Game" button.                                      | The game starts and displays a flashcard with a word to translate. |
-| 3    | Select the correct answer option from the displayed buttons.                               | Feedback message "Correct!" is displayed, and the score increases by 1. |
-| 4    | Select an incorrect answer option from the displayed buttons.                              | Feedback message "Wrong!" is displayed, and the score remains unchanged. |
-| 5    | Continue answering until no flashcards remain.                                             | The "Game Complete!" screen is displayed with the final score. |
-| 6    | Navigate to the high scores screen via the menu.                                           | The high scores list is displayed, showing scores associated with usernames. |
-| 7    | Press ESC while in the game to navigate back to the menu.                                  | The game screen pauses, and the menu appears.                  |
-| 8    | Enter an invalid input (e.g., scrolling with the mouse wheel) while hovering over options. | No points are awarded, and the program handles the input gracefully. |
-| 9    | Restart the game via the menu after completing a round.                                    | The game resets, and the score starts at 0.                    |
-| 10   | Close the program by clicking the close button on the window.                              | The program exits without errors.                              |
-
-### Test Coverage:
-- **User Interactions:** Includes clicking buttons, navigating menus, and entering inputs.
-- **Game Mechanics:** Covers selecting correct/incorrect options, scoring, and resetting the game.
-- **Graphical Elements:** Tests GUI transitions between screens and feedback visibility.
-- **Error Handling:** Validates input handling for unexpected actions (e.g., mouse wheel scrolling).
-- **Persistence:** Verifies the high scores are correctly displayed and updated.
+| Step | Procedure                                      | Expected Results                                                                 |
+|------|-----------------------------------------------|---------------------------------------------------------------------------------|
+| 1    | Launch the program                            | The application window appears, displaying the "Enter Your Username" screen.   |
+| 2    | Enter a username and press Enter        | Transition to the "Start Screen" with the "Start Game" button visible.         |
+| 3    | Click "Start Game" on the start screen        | Transition to the game screen, showing the first word to translate and options.|
+| 4    | Select the correct translation option         | The score increases, and the next word appears with updated options.           |
+| 5    | Enter an incorrect translation option         | A feedback message "Wrong!" appears, and the next word appears with new options.|
+| 6    | Exit the application during any screen        | The application closes gracefully without errors.                              |

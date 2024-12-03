@@ -1,11 +1,11 @@
 class Card:
     """
-    Represents a single flashcard with an English word and its Turkish translation.
+    A single flashcard with an English word and its Turkish translation pair.
     """
 
     def __init__(self, english_word, turkish_word):
         """
-        Initializes a Card object.
+        Initializes a card object.
 
         Args:
             english_word (str): The word in English.

@@ -8,7 +8,7 @@ class Controller:
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Turkish Flashcards Game")
         
-        # Initialize colors
+        # Colors
         self.COLORS = {
             'background': (245, 247, 250),
             'primary': (46, 196, 102),
@@ -20,14 +20,14 @@ class Controller:
             'input_border': (200, 200, 200)
         }
         
-        # Initialize fonts
+        # Fonts
         self.fonts = {
             'large': pygame.font.Font(None, 48),
             'medium': pygame.font.Font(None, 36),
             'small': pygame.font.Font(None, 24)
         }
         
-        # Initialize game state variables
+        # Game State Variables
         self.running = True
         self.clock = pygame.time.Clock()
         self.game_board = GameBoard()
@@ -36,19 +36,19 @@ class Controller:
         self.feedback_timer = 0
         self.current_options = []
         
-        # Username related variables
+        # Username Related Var
         self.username = ""
         self.username_active = True
         self.max_username_length = 15
         self.username_cursor_visible = True
         self.username_cursor_timer = 0
         
-        # Animation variables
+        # Animation Variables
         self.button_hover = None
         self.transition_alpha = 255
         self.is_transitioning = False
         
-        # Load flashcards
+        # Load Flashcards
         try:
             self.game_board.load_flashcards("assets/flashcards.txt")
             if self.game_board.get_current_card():
@@ -79,13 +79,13 @@ class Controller:
         """Enhanced start screen with animations"""
         self.screen.fill(self.COLORS['background'])
         
-        # Draw title with shadow effect
+        # Draw Title With Shadow Effect
         title = "Turkish Flashcards"
         shadow_offset = 2
         self.render_text(title, 'large', 402, 202, (0, 0, 0, 50))
         self.render_text(title, 'large', 400, 200, self.COLORS['accent'])
         
-        # Animated start button
+        # Animated Start Button
         self.draw_button("Start Game", 300, 300, 200, 50, 
                          self.button_hover == "start")
 
@@ -94,15 +94,15 @@ class Controller:
         button_rect = pygame.Rect(x, y, width, height)
         color = self.COLORS['primary'] if hover else self.COLORS['secondary']
         
-        # Draw button shadow
+        # Button Shadow
         shadow_rect = button_rect.copy()
         shadow_rect.y += 3
         pygame.draw.rect(self.screen, (0, 0, 0, 30), shadow_rect, border_radius=10)
         
-        # Draw main button
+        # Draw Main Button
         self.draw_rounded_rect(self.screen, color, button_rect, 10)
         
-        # Draw button text
+        # Draw Button Text
         text_color = self.COLORS['secondary'] if hover else self.COLORS['text']
         self.render_text(text, 'medium', x + width//2, y + height//2, text_color)
         
@@ -112,15 +112,15 @@ class Controller:
         """Draw the username input screen"""
         self.screen.fill(self.COLORS['background'])
         
-        # Draw title
+        # Draw Title
         self.render_text("Enter Your Username", 'large', 400, 150, self.COLORS['accent'])
         
-        # Draw input box
+        # Draw Input Box
         input_rect = pygame.Rect(250, 250, 300, 50)
         pygame.draw.rect(self.screen, self.COLORS['input_bg'], input_rect)
         pygame.draw.rect(self.screen, self.COLORS['input_border'], input_rect, 2)
         
-        # Draw username text with cursor
+        # Draw Username Text
         display_text = self.username
         if self.username_active and self.username_cursor_visible:
             display_text += "|"
@@ -129,7 +129,7 @@ class Controller:
         text_rect = text_surface.get_rect(center=input_rect.center)
         self.screen.blit(text_surface, text_rect)
         
-        # Draw continue button if username is not empty
+        # Draw Continue Button
         if self.username:
             self.draw_button("Continue", 300, 350, 200, 50, self.button_hover == "continue")
 
@@ -139,23 +139,23 @@ class Controller:
         current_card = self.game_board.get_current_card()
         
         if current_card:
-            # Draw header bar
+            # Header bar
             pygame.draw.rect(self.screen, self.COLORS['secondary'], (0, 0, 800, 100))
             
-            # Draw username
+            # Username
             self.render_text(f"Player: {self.username}", 'small', 100, 30, 
                            self.COLORS['accent'], centered=False)
             
-            # Draw word to translate
+            # Draw Word to Translate
             self.render_text(f"{current_card.english_word}", 'large', 
                            400, 50, self.COLORS['text'])
             
-            # Draw score
+            # Score
             score_text = f"Score: {self.game_board.score}"
             self.render_text(score_text, 'medium', 650, 30, 
                            self.COLORS['accent'], centered=False)
             
-            # Draw answer options
+            # Answer Options
             button_height = 80
             spacing = 20
             total_height = (button_height + spacing) * len(self.current_options)
@@ -166,7 +166,7 @@ class Controller:
                 self.draw_button(option, 150, y_pos, 500, button_height,
                                self.button_hover == i)
 
-            # Draw feedback message
+            # Feedback Message
             if self.feedback_message:
                 color = self.COLORS['primary'] if "Correct" in self.feedback_message \
                     else self.COLORS['error']
@@ -185,7 +185,7 @@ class Controller:
     def handle_start_screen_input(self, event):
         """Handle start screen input events"""
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:  # Enter key pressed
+            if event.key == pygame.K_RETURN:
                 self.game_state = "GAME"
                 self.current_options = self.game_board.get_options()
                 self.transition_alpha = 255
@@ -197,7 +197,7 @@ class Controller:
             return
 
         if self.game_state == "USERNAME":
-            # Check if continue button is clicked
+            
             if self.username and 300 <= x <= 500 and 350 <= y <= 400:
                 self.game_state = "START"
                 
@@ -258,9 +258,9 @@ class Controller:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.update_hover_state(mouse_x, mouse_y)
             
-            # Update username cursor blink
+            # Cursor Blink
             self.username_cursor_timer += 1
-            if self.username_cursor_timer >= 30:  # Blink every 30 frames
+            if self.username_cursor_timer >= 30:
                 self.username_cursor_visible = not self.username_cursor_visible
                 self.username_cursor_timer = 0
             
@@ -268,7 +268,7 @@ class Controller:
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left mouse button only
+                    if event.button == 1:
                         self.handle_click(mouse_x, mouse_y, event.type)
                 elif self.game_state == "USERNAME":
                     self.handle_username_input(event)
