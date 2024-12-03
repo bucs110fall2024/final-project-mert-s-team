@@ -1,166 +1,217 @@
 import pygame
 from src.card import Card
 from src.game_board import GameBoard
-import json
-
 
 class Controller:
+    """
+    Enhanced Controller class with improved UI design and animations
+    """
     def __init__(self):
         pygame.init()
-        self.base_screen = pygame.display.set_mode((800, 600), pygame.SCALED)
-        self.screen = pygame.Surface((800, 600))
+        self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption("Turkish Flashcards Game")
-
+        
         self.COLORS = {
             'background': (245, 247, 250),
             'primary': (46, 196, 102),
             'secondary': (255, 255, 255),
             'text': (33, 33, 33),
             'accent': (70, 130, 240),
-            'error': (255, 89, 89),
+            'error': (255, 89, 89)
         }
-
+        
         self.fonts = {
-            'large': pygame.font.SysFont('Arial', 48),
-            'medium': pygame.font.SysFont('Arial', 36),
-            'small': pygame.font.SysFont('Arial', 24),
+            'large': pygame.font.Font(None, 48),
+            'medium': pygame.font.Font(None, 36),
+            'small': pygame.font.Font(None, 24)
         }
-
+        
         self.running = True
         self.clock = pygame.time.Clock()
         self.game_board = GameBoard()
-        self.game_state = "USERNAME"  # Initial state
+        self.game_state = "START"
         self.feedback_message = ""
         self.feedback_timer = 0
         self.current_options = []
-        self.username = ""
-        self.high_scores = self.load_high_scores()
+        
+        # Animation variables
         self.button_hover = None
-
+        self.transition_alpha = 255
+        self.is_transitioning = False
+        
+        # Load flashcards
         try:
             self.game_board.load_flashcards("assets/flashcards.txt")
-            self.current_options = self.game_board.get_options()
+            if self.game_board.get_current_card():
+                self.current_options = self.game_board.get_options()
         except FileNotFoundError:
             print("Error: Flashcards file not found.")
             self.running = False
 
-    def load_high_scores(self):
-        try:
-            with open('high_scores.json', 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
+    def draw_rounded_rect(self, surface, color, rect, radius):
+        """Draw a rounded rectangle"""
+        pygame.draw.rect(surface, color, rect, border_radius=radius)
 
-    def save_high_scores(self):
-        with open('high_scores.json', 'w') as f:
-            json.dump(self.high_scores, f)
-
-    def update_high_score(self):
-        if self.username not in self.high_scores or self.game_board.score > self.high_scores[self.username]:
-            self.high_scores[self.username] = self.game_board.score
-            self.save_high_scores()
-
-    def render_text(self, text, size, x, y, color=None, centered=True):
+    def render_text(self, text, font_size, x, y, color=None, centered=True):
+        """Enhanced text rendering with multiple font sizes and centering"""
         if color is None:
             color = self.COLORS['text']
-        text_surface = self.fonts[size].render(text, True, color)
-        text_rect = text_surface.get_rect(center=(x, y) if centered else (x, y))
+        font = self.fonts[font_size]
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        if centered:
+            text_rect.center = (x, y)
+        else:
+            text_rect.topleft = (x, y)
         self.screen.blit(text_surface, text_rect)
+        return text_rect
 
-    def draw_username_screen(self):
-        self.screen.fill(self.COLORS['background'])
-        self.render_text("Enter Your Username", 'large', 400, 200)
-        input_rect = pygame.Rect(250, 280, 300, 50)
-        pygame.draw.rect(self.screen, self.COLORS['secondary'], input_rect, border_radius=10)
-        pygame.draw.rect(self.screen, self.COLORS['accent'], input_rect, 2, border_radius=10)
-        self.render_text(self.username, 'medium', input_rect.centerx, input_rect.centery)
-        self.render_text("Press Enter to continue", 'small', 400, 350)
+    def draw_button(self, text, x, y, width, height, hover=False):
+        """Draw an animated button with hover effects"""
+        button_rect = pygame.Rect(x, y, width, height)
+        color = self.COLORS['primary'] if hover else self.COLORS['secondary']
+        
+        # Draw button shadow
+        shadow_rect = button_rect.copy()
+        shadow_rect.y += 3
+        pygame.draw.rect(self.screen, (0, 0, 0, 30), shadow_rect, border_radius=10)
+        
+        # Draw main button
+        self.draw_rounded_rect(self.screen, color, button_rect, 10)
+        
+        # Draw button text
+        text_color = self.COLORS['secondary'] if hover else self.COLORS['text']
+        self.render_text(text, 'medium', x + width//2, y + height//2, text_color)
+        
+        return button_rect
 
-    def draw_high_scores_screen(self):
+    def draw_start_screen(self):
+        """Enhanced start screen with animations"""
         self.screen.fill(self.COLORS['background'])
-        self.render_text("High Scores", 'large', 400, 100)
-        y_pos = 200
-        sorted_scores = sorted(self.high_scores.items(), key=lambda x: x[1], reverse=True)
-        for i, (username, score) in enumerate(sorted_scores[:10]):  # Show top 10
-            self.render_text(f"{i + 1}. {username}: {score}", 'medium', 400, y_pos)
-            y_pos += 40
-        self.render_text("Press ESC to return to the menu", 'small', 400, 550)
+        
+        # Draw title with shadow effect
+        title = "Turkish Flashcards"
+        shadow_offset = 2
+        self.render_text(title, 'large', 402, 202, (0, 0, 0, 50))
+        self.render_text(title, 'large', 400, 200, self.COLORS['accent'])
+        
+        # Animated start button
+        self.draw_button("Start Game", 300, 300, 200, 50, 
+                         self.button_hover == "start")
 
     def draw_game_screen(self):
+        """Enhanced game screen with modern UI elements"""
         self.screen.fill(self.COLORS['background'])
         current_card = self.game_board.get_current_card()
-
+        
         if current_card:
-            pygame.draw.rect(self.screen, self.COLORS['secondary'], (0, 0, 800, 100))
-            self.render_text(f"Translate: {current_card.english_word}", 'large', 400, 50)
+            # Draw header bar
+            pygame.draw.rect(self.screen, self.COLORS['secondary'], 
+                             (0, 0, 800, 100))
+            
+            # Draw word to translate
+            self.render_text(f"{current_card.english_word}", 'large', 
+                             400, 50, self.COLORS['text'])
+            
+            # Draw score
             score_text = f"Score: {self.game_board.score}"
-            pygame.draw.rect(self.screen, self.COLORS['accent'], (680, 20, 100, 40), border_radius=10)
-            self.render_text(score_text, 'medium', 730, 40, self.COLORS['secondary'])
-            self.render_text(f"Player: {self.username}", 'small', 100, 30, centered=False)
-
-            if self.feedback_message:
-                color = self.COLORS['primary'] if "Correct" in self.feedback_message else self.COLORS['error']
-                self.render_text(self.feedback_message, 'medium', 400, 110, color)
-
+            self.render_text(score_text, 'medium', 650, 30, 
+                             self.COLORS['accent'], centered=False)
+            
+            # Draw answer options
             button_height = 80
             spacing = 20
-            start_y = 200
-
+            total_height = (button_height + spacing) * len(self.current_options)
+            start_y = (600 - total_height) // 2
+            
             for i, option in enumerate(self.current_options):
-                button_rect = pygame.Rect(150, start_y + i * (button_height + spacing), 500, button_height)
-                is_hovered = self.button_hover == i
-                pygame.draw.rect(self.screen, 
-                               self.COLORS['secondary'] if is_hovered else self.COLORS['primary'],
-                               button_rect, border_radius=10)
-                self.render_text(option, 'medium', button_rect.centerx, button_rect.centery,
-                               self.COLORS['text'] if is_hovered else self.COLORS['secondary'])
+                y_pos = start_y + i * (button_height + spacing)
+                self.draw_button(option, 150, y_pos, 500, button_height,
+                                 self.button_hover == i)
 
-    def handle_username_input(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN and self.username.strip():
+            # Draw feedback message
+            if self.feedback_message:
+                color = self.COLORS['primary'] if "Correct" in self.feedback_message \
+                    else self.COLORS['error']
+                self.render_text(self.feedback_message, 'medium', 400, 550, color)
+
+    def handle_click(self, x, y, event_type=pygame.MOUSEBUTTONDOWN):
+        """Enhanced click handling with button feedback"""
+        if event_type != pygame.MOUSEBUTTONDOWN:
+            return
+
+        if self.game_state == "START":
+            if 300 <= x <= 500 and 300 <= y <= 350:
                 self.game_state = "GAME"
-            elif event.key == pygame.K_BACKSPACE:
-                self.username = self.username[:-1]
-            elif len(self.username) < 15 and event.unicode.isprintable():
-                self.username += event.unicode
-
-    def handle_game_input(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
+                self.current_options = self.game_board.get_options()
+                self.transition_alpha = 255
+                self.is_transitioning = True
+                
+        elif self.game_state == "GAME":
             button_height = 80
             spacing = 20
-            start_y = 200
-
-            for i, _ in enumerate(self.current_options):
-                button_rect = pygame.Rect(150, start_y + i * (button_height + spacing), 500, button_height)
-                if button_rect.collidepoint(mouse_pos):
-                    is_correct = self.game_board.check_answer(self.current_options[i])
-                    self.feedback_message = "Correct!" if is_correct else "Incorrect!"
+            total_height = (button_height + spacing) * len(self.current_options)
+            start_y = (600 - total_height) // 2
+            
+            for i in range(len(self.current_options)):
+                y_pos = start_y + i * (button_height + spacing)
+                if 150 <= x <= 650 and y_pos <= y <= y_pos + button_height:
+                    selected_option = self.current_options[i]
+                    is_correct = self.game_board.current_card.check_answer(selected_option)
+                    self.game_board.update_score(is_correct)
+                    
+                    self.feedback_message = "Correct!" if is_correct else "Wrong!"
                     self.feedback_timer = 60
+                    
+                    self.game_board.next_card()
+                    self.current_options = self.game_board.get_options()
+                    break
+                    
+        elif self.game_state == "GAME_OVER":
+            if 300 <= x <= 500 and 400 <= y <= 450:
+                self.game_state = "START"
+                self.game_board.reset_game()
+                self.feedback_message = ""
+                self.current_options = self.game_board.get_options()
 
-                    if self.game_board.has_more_cards():
-                        self.current_options = self.game_board.get_options()
-                    else:
-                        self.update_high_score()
-                        self.game_state = "GAME_OVER"
+    def update_hover_state(self, x, y):
+        """Update button hover states for animations"""
+        self.button_hover = None
+        
+        if self.game_state == "START":
+            if 300 <= x <= 500 and 300 <= y <= 350:
+                self.button_hover = "start"
+                
+        elif self.game_state == "GAME":
+            button_height = 80
+            spacing = 20
+            total_height = (button_height + spacing) * len(self.current_options)
+            start_y = (600 - total_height) // 2
+            
+            for i in range(len(self.current_options)):
+                y_pos = start_y + i * (button_height + spacing)
+                if 150 <= x <= 650 and y_pos <= y <= y_pos + button_height:
+                    self.button_hover = i
                     break
 
     def mainloop(self):
+        """Enhanced main loop with smooth animations"""
         while self.running:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.update_hover_state(mouse_x, mouse_y)
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-                elif self.game_state == "USERNAME":
-                    self.handle_username_input(event)
-                elif self.game_state == "GAME":
-                    self.handle_game_input(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button only
+                        self.handle_click(mouse_x, mouse_y, event.type)
 
-            if self.game_state == "USERNAME":
-                self.draw_username_screen()
+            if self.game_state == "START":
+                self.draw_start_screen()
             elif self.game_state == "GAME":
                 self.draw_game_screen()
 
-            self.base_screen.blit(pygame.transform.scale(self.screen, (800, 600)), (0, 0))
             pygame.display.flip()
             self.clock.tick(60)
 
