@@ -78,6 +78,30 @@ class GameBoard:
         random.shuffle(options)
         return options
 
+    def check_answer(self, selected_answer):
+        """
+        Checks if the selected answer matches the current card's Turkish word.
+
+        Args:
+            selected_answer (str): The Turkish word selected by the user.
+
+        Returns:
+            bool: True if the selected answer is correct, False otherwise.
+        """
+        if self.current_card and selected_answer == self.current_card.turkish_word:
+            self.update_score(True)
+            return True
+        return False
+
+    def has_more_cards(self):
+        """
+        Checks if there are more cards to display.
+
+        Returns:
+            bool: True if more cards are available, False otherwise.
+        """
+        return len(self.flashcards) > 1
+
     def update_score(self, correct):
         """
         Updates the score if the user's answer is correct.
