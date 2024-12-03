@@ -1,0 +1,30 @@
+hello,merhaba
+goodbye,güle güle
+thank you,teşekkür ederim
+please,lütfen
+yes,evet
+no,hayır
+cat,kedi
+dog,köpek
+apple,elma
+water,su
+bread,ekmek
+friend,arkadaş
+love,aşk
+teacher,öğretmen
+student,öğrenci
+school,okul
+car,araba
+house,ev
+book,kitap
+pen,kalem
+computer,bilgisayar
+phone,telefon
+music,müzik
+coffee,kahve
+milk,süt
+sugar,şeker
+sun,güneş
+star,yıldız
+flower,çiçek
+tree,ağaç

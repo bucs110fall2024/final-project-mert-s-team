@@ -1,13 +1,14 @@
-import pygame
+from src.controller import Controller
 
-pygame.event.pump()
 def main():
-    pygame.init()
-    #Create an instance on your controller object
-    #Call your mainloop
+    """
+    Entry point of the program. Initializes the Controller and starts the game loop.
+    """
+    # Create an instance of the Controller class
+    controller = Controller()
     
-    ###### NOTHING ELSE SHOULD GO IN main(), JUST THE ABOVE 3 LINES OF CODE ######
+    # Start the main game loop
+    controller.mainloop()
 
-# https://codefather.tech/blog/if-name-main-python/
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
